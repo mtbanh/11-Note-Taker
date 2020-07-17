@@ -2,7 +2,8 @@ const express = require('express');
 const path = require('path');
 const fs = require('fs');
 const db = require('.journal.json')
-c
+const util = require('util')
+const writeFileAsync = util.promisify(fs.writeFile)
 
 const app = express();
 
