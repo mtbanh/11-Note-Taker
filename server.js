@@ -2,8 +2,10 @@ const express = require('express');
 const path = require('path');
 const fs = require('fs');
 const db = require('.journal.json')
-const util = require('util')
+const util = require('util');
+const { networkInterfaces } = require('os');
 const writeFileAsync = util.promisify(fs.writeFile)
+const readFileAsync = util.promisify(fs.readFile)
 
 const app = express();
 
@@ -23,11 +25,12 @@ app.get("/notes", (req, res)=>{
 });
 
 app.get("/api/notes", (req, res)=>{
-    try{
-        notesData = JSON.parse(notesData);
+    res.sendFile(path.join(__dirname, "/db/db.json"));
+})
 
-    }
-    res.json(db)
+app.get("api/notes/:id", (req, res) =>{
+    let savedNotes = JSON.parse(fs.readFileAsync("./db/db.json", "utf-8"));
+    res.json(savedNotes[Number(req.params.id)])
 })
 
 //create route that takes user to index.html
@@ -35,8 +38,12 @@ app.get("*", (req, res)=>{
     res.sendFile(path.join(__dirname, "public/index.html"))
 });
 
-//create route that reads the db.json file and return notes as JSON
-app.get("", (req, res)=>{
-    res.sendFile(path.join(__dirname, "public/index.html"))
-});
 //POST '/api/notes'
+
+app.post("/api/notes", (req, res) =>{
+    let savedNotes = JSON.parse(fs.readFileAsync("./db/db.json", "utf-8"));
+    let newNote = req.body;
+    let uniqueID = (savedNotes.length).toString();
+    newNote.id = uniqueID;
+    savedNotes.push(newNote);
+})
