@@ -53,6 +53,7 @@ app.post("/api/notes", (req, res) =>{
     savedNotes.push(newNote);
 
     fs.writeFileSync("./db/db.json", JSON.stringify(savedNotes));
+    console.log(`notes saved. Content: ${savedNotes}`)
     res.json(savedNotes);
 })
 
@@ -60,9 +61,10 @@ app.delete("api/notes/:id", (req, res) =>{
     let savedNotes = JSON.parse(fs.readFileSync("./db/db.json", "utf-8"));
     let noteID = req.params.id;
     let newID =0;
-    savedNotes = savedNotes.filter(currentNote =>{
-        return currentNote.id != noteID;
+    savedNotes = savedNotes.filter((savedNotes, index, arr) =>{
+        return savedNotesid != noteID;
     })
+    console.log(`Deleting ${noteID}`)
 
     for (currentNote of savedNotes){
         currentNote.id = newID.toString();
